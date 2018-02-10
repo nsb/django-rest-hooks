@@ -63,7 +63,7 @@ def find_and_fire_hook(event_name, instance, user_override=None):
             filters['user'] = instance
         else:
             raise Exception(
-                '{} has no `OWNER_MODEL.__name__` property. REST Hooks needs this.'.format(repr(instance))
+                '{} has no `{}` property. REST Hooks needs this.'.format(repr(instance), OWNER_FIELD_NAME)
             )
     # NOTE: This is probably up for discussion, but I think, in this
     # case, instead of raising an error, we should fire the hook for

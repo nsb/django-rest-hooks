@@ -4,11 +4,6 @@ from django import forms
 from rest_hooks.models import Hook
 
 
-AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
-OWNER_MODEL = getattr(settings, 'REST_HOOKS_OWNER_MODEL', AUTH_USER_MODEL)
-OWNER_FIELD_NAME = getattr(settings, 'REST_HOOKS_OWNER_FIELD_NAME', 'user')
-
-
 HOOK_EVENTS = getattr(settings, 'HOOK_EVENTS', None)
 if HOOK_EVENTS is None:
     raise Exception("You need to define settings.HOOK_EVENTS!")

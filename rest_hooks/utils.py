@@ -1,4 +1,10 @@
 from django.conf import settings
+from django.apps import apps
+
+
+AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
+OWNER_MODEL = getattr(settings, 'REST_HOOKS_OWNER_MODEL', AUTH_USER_MODEL)
+OWNER_FIELD_NAME = getattr(settings, 'REST_HOOKS_OWNER_FIELD_NAME', 'user')
 
 
 def get_module(path):
@@ -34,7 +40,6 @@ def find_and_fire_hook(event_name, instance, user_override=None):
     """
     Look up Hooks that apply
     """
-    from django.contrib.auth.models import User
     from rest_hooks.models import Hook, HOOK_EVENTS
 
     if not event_name in HOOK_EVENTS.keys():
@@ -49,12 +54,12 @@ def find_and_fire_hook(event_name, instance, user_override=None):
         if user_override:
             filters['user'] = user_override
         elif hasattr(instance, 'user'):
-            filters['user'] = instance.user
-        elif isinstance(instance, User):
+            filters['user'] = getattr(instance, OWNER_FIELD_NAME)
+        elif isinstance(instance, apps.get_model(*OWNER_MODEL.split('.', 1))):
             filters['user'] = instance
         else:
             raise Exception(
-                '{} has no `user` property. REST Hooks needs this.'.format(repr(instance))
+                '{} has no `OWNER_MODEL.__name__` property. REST Hooks needs this.'.format(repr(instance))
             )
     # NOTE: This is probably up for discussion, but I think, in this
     # case, instead of raising an error, we should fire the hook for
@@ -69,7 +74,7 @@ def find_and_fire_hook(event_name, instance, user_override=None):
 
 def distill_model_event(instance, model, action, user_override=None):
     """
-    Take created, updated and deleted actions for built-in 
+    Take created, updated and deleted actions for built-in
     app/model mappings, convert to the defined event.name
     and let hooks fly.
 

@@ -78,7 +78,7 @@ def find_and_fire_hook(event_name, instance, user_override=None):
 
 def distill_model_event(instance, model, action, user_override=None):
     """
-    Take created, updated and deleted actions for built-in
+    Take created, updated and deleted actions for built-in 
     app/model mappings, convert to the defined event.name
     and let hooks fly.
 

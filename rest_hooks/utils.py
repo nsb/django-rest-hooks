@@ -1,5 +1,9 @@
 from django.conf import settings
-from django.apps import apps
+try:
+    from django.apps import apps
+    get_model = apps.get_model
+except ImportError:
+    from django.db.models import get_model
 
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
@@ -55,7 +59,7 @@ def find_and_fire_hook(event_name, instance, user_override=None):
             filters['user'] = user_override
         elif hasattr(instance, 'user'):
             filters['user'] = getattr(instance, OWNER_FIELD_NAME)
-        elif isinstance(instance, apps.get_model(*OWNER_MODEL.split('.', 1))):
+        elif isinstance(instance, get_model(*OWNER_MODEL.split('.', 1))):
             filters['user'] = instance
         else:
             raise Exception(

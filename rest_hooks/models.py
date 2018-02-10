@@ -15,7 +15,7 @@ except ImportError:
     # Django >= 1.7
     import json
 
-from rest_hooks.utils import get_module, find_and_fire_hook, distill_model_event
+from rest_hooks.utils import get_module, find_and_fire_hook, distill_model_event, OWNER_MODEL, OWNER_FIELD_NAME
 
 from rest_hooks import signals
 
@@ -29,10 +29,6 @@ if getattr(settings, 'HOOK_THREADING', True):
     client = Client()
 else:
     client = requests.Session()
-
-AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
-OWNER_MODEL = getattr(settings, 'REST_HOOKS_OWNER_MODEL', AUTH_USER_MODEL)
-OWNER_FIELD_NAME = getattr(settings, 'REST_HOOKS_OWNER_FIELD_NAME', 'user')
 
 
 class AbstractHook(models.Model):
